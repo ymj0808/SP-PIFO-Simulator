@@ -10,7 +10,7 @@
         <a-col :span="8" style="text-align: right">
           <a
             style="color: black"
-            href="https://github.com/chen622/SP-PIFO-Simulator"
+            href="https://github.com/ymj/SP-PIFO-Simulator"
             target="_blank"
           >
             <github-outlined/>
