@@ -102,6 +102,7 @@
       >
       <a-button @click="onSubmitGaussian">Gaussian</a-button>
       <a-button @click="onSubmitPossion">Possion</a-button>
+      <a-button @click="onSubmitTrace">Trace</a-button>
     </a-form-item>
     <a-form-item> </a-form-item>
     <a-form-item> </a-form-item>
@@ -306,6 +307,7 @@ export default {
       }
       this.formState.packages = array;
     },
+    onSubmitTrace(){},    // TODO ymj
     showAddTag() {
       this.inputVisible = true;
       this.newPack = 1;
