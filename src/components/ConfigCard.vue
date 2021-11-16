@@ -107,6 +107,13 @@
       >
       <a-button @click="onSubmitGaussian">Gaussian</a-button>
       <a-button @click="onSubmitPossion">Possion</a-button>
+
+
+      <div style="border-style:solid">
+        <input type="file" ref="doc" @change="readFile()" />
+        <div>{{content}}</div>
+      </div>
+
       <a-button @click="onSubmitTrace">Trace</a-button>
     </a-form-item>
     <a-form-item> </a-form-item>
@@ -139,6 +146,8 @@ export default {
         packages: [],
         bufferSize: 32
       },
+      file: null,
+      content : null
     };
   },
   computed: {},
@@ -198,58 +207,8 @@ export default {
     },
     onSubmitGaussian() {
       const array = [];
-      const data = [
-        45,
-        48,
-        65,
-        68,
-        68,
-        10,
-        84,
-        22,
-        37,
-        88,
-        71,
-        89,
-        89,
-        13,
-        59,
-        66,
-        40,
-        88,
-        47,
-        89,
-        82,
-        38,
-        26,
-        78,
-        73,
-        10,
-        21,
-        81,
-        70,
-        80,
-        48,
-        65,
-        83,
-        89,
-        50,
-        30,
-        20,
-        20,
-        15,
-        40,
-        33,
-        66,
-        10,
-        58,
-        33,
-        32,
-        75,
-        24,
-        36,
-        76,
-      ];
+      const data = [45,48,65,68,68,10,84,22,37,88,71,89,89,13,59,66,40,88,47,89,82,38,26,78,73,
+                    10,21,81,70,80,48,65,83,89,50,30,20,20,15,40,33,66,10,58,33,32,75,24,36,76];
       for (let index = 0; index < 50; index++) {
         array.push({ size: data[index], id: index, inversion: [], preemption: []});
       }
@@ -257,69 +216,20 @@ export default {
     },
     onSubmitPossion() {
       const array = [];
-      const data = [
-        29,
-        18,
-        19,
-        23,
-        24,
-        33,
-        19,
-        29,
-        22,
-        27,
-        24,
-        27,
-        28,
-        27,
-        27,
-        25,
-        24,
-        23,
-        33,
-        26,
-        25,
-        34,
-        21,
-        31,
-        31,
-        23,
-        19,
-        19,
-        28,
-        24,
-        23,
-        27,
-        28,
-        29,
-        28,
-        26,
-        25,
-        23,
-        25,
-        28,
-        23,
-        32,
-        17,
-        26,
-        40,
-        20,
-        21,
-        24,
-        23,
-        19,
-      ];
+      const data = [29,18,19,23,24,33,19,29,22,27,24,27,28,27,27,25,24,23,33,26,25,34,21,31,31,
+                    23,19,19,28,24,23,27,28,29,28,26,25,23,25,28,23,32,17,26,40,20,21,24,23,19];
       for (let index = 0; index < 50; index++) {
         array.push({ size: data[index], id: index, inversion: [], preemption: []});
       }
       this.formState.packages = array;
     },
-    onSubmitTrace(){
 
 
-
+    onSubmitTrace(){   
       
-    },    // TODO-ymj
+    },   
+
+
     showAddTag() {
       this.inputVisible = true;
       this.newPack = 1;
