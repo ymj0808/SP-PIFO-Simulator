@@ -5,26 +5,31 @@
         style="min-width: 200px"
         v-model:value="formState.queueAmount"
         :min="2"
-        :max="10"
+        :max="32"
       />
     </a-form-item>
-    <a-form-item label="Time Interval">
+
+    <a-form-item label="Buffer Size(packets)">
+      <a-input-number
+        style="min-width: 200px"
+        v-model:value="formState.bufferSize"
+        :min="0"
+        :max="1024"        
+      />
+    </a-form-item>
+
+    <a-form-item label="Time Interval(seconds)">
       <a-input-number
         style="min-width: 200px"
         v-model:value="formState.timeInterval"
         :min="0"
         :max="4"
-        :step="0.2"
-        :formatter="(value) => `${value} sec`"
-        :parser="(value) => value.replace('sec', '')"
+        :step="0.1"
       />
     </a-form-item>
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
       <a-button type="primary" @click="onSubmit">Schedule</a-button>
-    </a-form-item>
-    <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-      <a-button type="primary" @click="startTransmit">Transmit</a-button>
-    </a-form-item>
+    </a-form-item>    
     <br />
     <a-form-item
       label="Packages"
@@ -127,11 +132,12 @@ export default {
     return {
       inputVisible: false,
       newPack: 1,
-      sizeRange: { min: 1, max: 100 },
+      sizeRange: { min: 1, max: 65535 },
       formState: {
-        queueAmount: 3,
+        queueAmount: 2,
         timeInterval: 0,
         packages: [],
+        bufferSize: 32
       },
     };
   },
@@ -144,7 +150,7 @@ export default {
       }
       this.$emit("changeConfig", this.formState);
     },
-    startTransmit() {
+    startTransmit() {                     // unused  ymj
       // TODO: check if the queue is empty (haven't been scheduled yet)
       if (this.formState.packages.length < 1){
         this.$message.error("Packages can not be empty");
@@ -152,6 +158,7 @@ export default {
       }
       this.$emit("resetConfig", this.formState);
     },
+    
     onSubmitRandom() {
       const array = [];
       for (let index = 0; index < 100; index++) {
@@ -307,7 +314,12 @@ export default {
       }
       this.formState.packages = array;
     },
-    onSubmitTrace(){},    // TODO-ymj
+    onSubmitTrace(){
+
+
+
+      
+    },    // TODO-ymj
     showAddTag() {
       this.inputVisible = true;
       this.newPack = 1;

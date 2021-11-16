@@ -40,7 +40,6 @@ export default {
         x.push(pkt.size)
         let tempY = 0
         pkt.inversion.forEach(i => tempY += i)
-        console.log(tempY, pkt.inversion)
         y.push(tempY)
       })
       this.option = {

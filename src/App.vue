@@ -28,7 +28,7 @@
             Configuration
           </span>
         </template>
-        <config-card @changeConfig="changeConfig" @resetConfig="resetConfig"/>
+        <config-card @changeConfig="changeConfig"/>
       </a-card>
       <a-card style="margin: 20px 0" :hoverable="true">
         <template v-slot:title>
@@ -44,7 +44,7 @@
           description="You should do basic configuration first!"
         />
         <result-card v-else :packages="config.packages" :queueAmount="config.queueAmount"
-                     :timeInterval="config.timeInterval" ref="resultCard"
+                     :bufferSize="config.bufferSize" :timeInterval="config.timeInterval" ref="resultCard"
                      @showInversionCharts="showInversionCharts"></result-card>
       </a-card>
       <a-card :hoverable="true" v-show="inversionPackages.length > 0">
@@ -97,8 +97,13 @@ export default {
         this.$refs.resultCard.transmit()
       })
     },
+    startOutput(config) {
+      this.config = JSON.parse(JSON.stringify(config))
+      this.$nextTick(() => {
+        this.$refs.resultCard.output();
+      })
+    },
     showInversionCharts(inversionPackages) {
-      console.log(inversionPackages)
       this.inversionPackages = inversionPackages
       this.$refs.inversionCard.changeData(inversionPackages)
     }

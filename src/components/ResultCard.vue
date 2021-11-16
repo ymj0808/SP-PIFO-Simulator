@@ -1,35 +1,33 @@
 <template>
   <div>
-    <a-row style="min-height: 400px" type="flex" justify="space-between">
-      <a-col :span="10" style="border-right: 1px dashed #ddd">
+    <a-row style="min-height: 100px" type="flex" justify="space-between">
+      <a-col :span="24" style="border-right: 1px dashed #ddd">
         <a-list
-          :grid="{ gutter: 16, xs: 1, sm: 2, lg: 4 }"
+          :grid="{ gutter: 16, xs: 1, sm: 2, lg: 24 }"
           :locale="{ emptyText: 'No more packages' }"
           :data-source="remainedPackages"
         >
-          <template #renderItem="{ item, index }">
+          <template #renderItem="{item}">
             <a-list-item>
               <a-card
-                class="package"
+                class="package-small"
                 :body-style="{ padding: '10px' }"
                 :style="`background: ${$packageColor(item.size)};`"
               >
-                <p :style="`font-weight: bold;`">
-                  <codepen-circle-filled/>
-                  #{{ finishAmount + 1 + index }}
-                </p>
-                <p>Size: {{ item.size }}</p>
+                <p>{{item.size}}</p>
               </a-card>
             </a-list-item>
           </template>
         </a-list>
       </a-col>
-      <a-col :span="14" style="padding-left: 10px">
-        <a-button type="primary"  @click="finishNow" v-if="finishAmount < packages.length">
-          <template #icon shape="circle">
-            <fast-forward-outlined/>
-          </template>
-        </a-button>
+    </a-row>
+
+
+    
+
+    <a-row style="min-height: 400px" type="flex" justify="space-between">
+      <a-col :span="10" style="padding-left: 10px">
+        <a-button type="primary" @click="finishNow">Speedup</a-button>
 
         <a-list item-layout="horizontal" :data-source="queueList">
           <template #renderItem="{ item, index }">
@@ -45,7 +43,7 @@
                       font-weight: bold;
                       font-size: 16px;
                       line-height: 30px;
-                      text-align: right;
+                      text-align: center;
                     "
                   >
                     {{ `Queue #${index + 1}` }}
@@ -77,9 +75,55 @@
           </template>
         </a-list>
       </a-col>
+    
+      <a-col :span="12" style="border-right: 1px dashed #ddd">
+        <a-button type="primary" @click="clear">Clear</a-button>
+        <a-list item-layout="horizontal" :data-source="outputQueueList">
+          <template #renderItem="{item}">
+            <a-list-item>
+              <div type="flex" style="width: 100%">                
+                <div style="width: 100%">
+                  <p
+                    style="
+                      font-weight: bold;
+                      font-size: 16px;
+                      line-height: 30px;
+                      text-align: center;
+                    "
+                  >
+                    {{ `Output`}}
+                  </p>                  
+                  <a-list
+                    :locale="{ emptyText: 'Empty list' }"
+                    :grid="{ gutter: 4, xs: 1, sm: 2, lg: 24 }"
+                    :data-source="item.list"
+                    class="queue"
+                  >
+                    <template #renderItem="{ item }">
+                      <a-list-item>
+                        <a-card
+                          class="package-small"
+                          :body-style="{ padding: '2px' }"
+                          :style="`background: ${$packageColor(item.size)};`"
+                        >
+                          <!-- <p :style="`font-weight: bold;`">
+                            <codepen-circle-filled />
+                          </p> -->
+                          <p>{{ item.size }}</p>
+                        </a-card>
+                      </a-list-item>
+                    </template>
+                  </a-list>
+                </div>
+              </div>
+            </a-list-item>
+          </template>
+        </a-list>
+      </a-col>
     </a-row>
-    <a-popover v-for="(item, i) in queueList" :key="i">
-      <li>Queue{{i+1}}</li>
+
+    <a-popover v-for="(item, i) in outputQueueList" :key="i">
+      <li>outputQueue</li>
       <a-popover v-for="(pkt, j) in item.list" :key="j">
         R{{pkt.size}}:{{pkt.inversion}} {{pkt.preemption}}&#12288;;
       </a-popover>
@@ -90,8 +134,6 @@
 
 
 <script>
-import {CodepenCircleFilled, FastForwardOutlined} from "@ant-design/icons-vue";
-
 export default {
   name: "ResultCard",
   props: {
@@ -107,26 +149,37 @@ export default {
       type: Number,
       default: 1,
     },
+    bufferSize:{
+      type: Number,
+      default:32,
+    }
   },
-  components: {CodepenCircleFilled, FastForwardOutlined},
   computed: {
     remainedPackages() {
-      return this.packages.slice(this.finishAmount);
+      let tmpList = this.packages.slice(this.finishAmount).concat()
+      return tmpList.reverse();
     },
   },
   data() {
     return {
       finishAmount: 0,
+      outputAmount:0,
       queueList: [],
+      outputQueueList: [{
+        list: [],
+      }],
       timer: null,
     };
   },
   methods: {
+    clear(){      
+      this.outputQueueList = [{
+        list: []
+      }]
+    },
     popPackage() {
-      if (this.finishAmount >= this.packages.length) {
-        clearInterval(this.timer);
+      if (this.finishAmount >= this.packages.length)
         return;
-      }
       const item = this.packages[this.finishAmount];
       this.finishAmount++;
       // push up
@@ -152,25 +205,74 @@ export default {
       for (let i = this.queueList.length - 1; i >= 0; i--) {
         this.queueList[i].bound -= this.queueList[0].bound - item.size;
       }
+            
     },
     apply() {
       if (this.timer) {
         clearInterval(this.timer);
       }
-      this.queueList = [];
-      this.finishAmount = 0;
+      this.queueList = []
+      this.finishAmount = 0
+      this.outputAmount = 0
       for (let i = 0; i < this.queueAmount; i++) {
-        this.queueList.push({bound: 0, list: [], minRank: 100});
+        this.queueList.push({bound: 0, list: [], minRank: 10000});
       }
-      this.timer = setInterval(this.popPackage, this.timeInterval * 1000);
+      for(let i = 0; i < this.bufferSize; i++){
+       this.popPackage()
+      }
+      this.timer = setInterval(this.transmit, this.timeInterval * 1000)
+      
     },
-    finishNow() {
-      clearInterval(this.timer);
-      while (this.finishAmount < this.packages.length) {
+
+    transmit(){
+      if(this.finishAmount < this.packages.length){
         this.popPackage()
       }
+      console.log(this.bufferSize , this.finishAmount, this.outputAmount)
+      if(this.finishAmount == this.packages.length || (this.finishAmount > this.bufferSize && this.outputAmount < this.packages.length)){
+        this.output()
+      }
+      let tmpList = this.outputQueueList[0].list.concat()
+      this.$emit('showInversionCharts', tmpList)
     },
-    transmit() {
+
+    finishNow() {
+      clearInterval(this.timer)
+      while (this.outputAmount < this.packages.length) {
+        this.transmit()
+      }
+    },
+
+    output() {
+      for (let i = 0; i < this.queueAmount; i++) {
+        if(this.queueList[i].list.length <= 0){
+          continue
+        }
+        let currentPkt = this.queueList[i].list.shift()
+        this.outputQueueList[0].list.push(currentPkt) 
+
+        for (let n = i; n < this.queueAmount; n++) {
+          // inversion occurs
+          if (this.queueList[n].minRank < currentPkt.size) {
+            // travers to update the inversion array of the queue
+            for (let k = 0; k < this.queueList[n].list.length; k++) {
+              if (currentPkt.size > this.queueList[n].list[k].size) {
+                this.queueList[n].list[k].inversion.push(currentPkt.size - this.queueList[n].list[k].size);
+                this.queueList[n].list[k].preemption.push(currentPkt.size);
+              }
+            }
+          }
+        }
+
+        this.outputAmount++
+        break
+      }
+      if(this.outputAmount >= this.packages.length){
+        clearInterval(this.timer)
+      }
+    },
+
+    transmit_orig() {
       let totalPackages = []
       // queue from up to down
       for (let i = 0; i < this.queueAmount; i++) {
