@@ -26,7 +26,7 @@
     
 
     <a-row style="min-height: 400px" type="flex" justify="space-between">
-      <a-col :span="10" style="padding-left: 10px">
+      <a-col :span="24" style="padding-left: 10px">
         <a-button type="primary" @click="finishNow">Speedup</a-button>
 
         <a-list item-layout="horizontal" :data-source="queueList">
@@ -76,7 +76,7 @@
         </a-list>
       </a-col>
     
-      <a-col :span="12" style="border-right: 1px dashed #ddd">
+      <a-col :span="24" style="border-right: 1px dashed #ddd">
         <a-button type="primary" @click="clear">Clear</a-button>
         <a-list item-layout="horizontal" :data-source="outputQueueList">
           <template #renderItem="{item}">
