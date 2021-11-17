@@ -121,7 +121,7 @@
         </a-list>
       </a-col>
     </a-row>
-
+<!--
     <a-popover v-for="(item, i) in outputQueueList" :key="i">
       <li>outputQueue</li>
       <a-popover v-for="(pkt, j) in item.list" :key="j">
@@ -129,8 +129,11 @@
       </a-popover>
       <li class="divider" role="presentation"></li>
     </a-popover>
+
+-->
   </div>
 </template>
+
 
 
 <script>
