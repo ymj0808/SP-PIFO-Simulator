@@ -44,8 +44,8 @@
           description="You should do basic configuration first!"
         />
         <result-card v-else :packages="config.packages" :queueAmount="config.queueAmount"
-                     :bufferSize="config.bufferSize" :timeInterval="config.timeInterval" ref="resultCard"
-                     @showInversionCharts="showInversionCharts"></result-card>
+                     :bufferSize="config.bufferSize" :flowAmount="config.flowAmount" :timeInterval="config.timeInterval" ref="resultCard"
+                     @showInversionCharts="showInversionCharts" @showSpeedCharts="showSpeedCharts"></result-card>
       </a-card>
       <a-card :hoverable="true" v-show="inversionPackages.length > 0">
         <template v-slot:title>
@@ -56,6 +56,16 @@
         </template>
         <inversion-card ref="inversionCard"></inversion-card>
       </a-card>
+
+       <a-card>
+        <template v-slot:title>
+          <span class="card-title">
+            <play-square-outlined style="margin-right: 5px"/>
+            Bandwidth
+          </span>
+        </template>
+        <speed-card ref="SpeedCard"></speed-card>
+      </a-card>
     </a-layout-content>
   </a-layout>
 </template>
@@ -65,6 +75,7 @@ import {GithubOutlined, PlaySquareOutlined, SettingOutlined} from "@ant-design/i
 import ConfigCard from "@/components/ConfigCard";
 import ResultCard from "@/components/ResultCard";
 import InversionCard from "@/components/InversionCard";
+import SpeedCard from "@/components/SpeedCard";
 
 export default {
   name: "App",
@@ -72,6 +83,7 @@ export default {
     ConfigCard,
     ResultCard,
     InversionCard,
+    SpeedCard,
     GithubOutlined,
     PlaySquareOutlined,
     SettingOutlined,
@@ -81,6 +93,7 @@ export default {
       headerHeight: 64,
       config: {},
       inversionPackages: [],
+      speedPackets: [],
     };
   },
   methods: {
@@ -106,6 +119,10 @@ export default {
     showInversionCharts(inversionPackages) {
       this.inversionPackages = inversionPackages
       this.$refs.inversionCard.changeData(inversionPackages)
+    },
+    showSpeedCharts(speedPackets) {
+      this.speedPackets = speedPackets
+      this.$refs.SpeedCard.changeData(speedPackets)
     }
   },
 };

@@ -12,7 +12,7 @@
               <a-card
                 class="package-small"
                 :body-style="{ padding: '10px' }"
-                :style="`background: ${$packageColor(item.size)};`"
+                :style="`background: ${$packageColor(item.id * 60)};`"
               >
                 <p>{{item.size}}</p>
               </a-card>
@@ -59,7 +59,7 @@
                         <a-card
                           class="package-small"
                           :body-style="{ padding: '2px' }"
-                          :style="`background: ${$packageColor(item.size)};`"
+                          :style="`background: ${$packageColor(item.id * 60)};`"
                         >
                           <!-- <p :style="`font-weight: bold;`">
                             <codepen-circle-filled />
@@ -104,7 +104,7 @@
                         <a-card
                           class="package-small"
                           :body-style="{ padding: '2px' }"
-                          :style="`background: ${$packageColor(item.size)};`"
+                          :style="`background: ${$packageColor(item.id * 60)};`"
                         >
                           <!-- <p :style="`font-weight: bold;`">
                             <codepen-circle-filled />
@@ -155,7 +155,11 @@ export default {
     bufferSize:{
       type: Number,
       default:32,
-    }
+    },
+    flowAmount:{
+      type: Number,
+      default:4,
+    },
   },
   computed: {
     remainedPackages() {
@@ -166,12 +170,13 @@ export default {
   data() {
     return {
       finishAmount: 0,
-      outputAmount:0,
+      outputAmount: 0,
       queueList: [],
       outputQueueList: [{
         list: [],
-      }],
+      }],      
       timer: null,
+      packetsTrans: [],
     };
   },
   methods: {
@@ -230,8 +235,7 @@ export default {
     transmit(){
       if(this.finishAmount < this.packages.length){
         this.popPackage()
-      }
-      console.log(this.bufferSize , this.finishAmount, this.outputAmount)
+      }      
       if(this.finishAmount == this.packages.length || (this.finishAmount > this.bufferSize && this.outputAmount < this.packages.length)){
         this.output()
       }
@@ -247,12 +251,19 @@ export default {
     },
 
     output() {
+      if(this.packetsTrans.length == 0){
+        for(let i = 0 ; i < this.flowAmount; ++i){
+          this.packetsTrans.push(0)
+        }
+      }
+      
       for (let i = 0; i < this.queueAmount; i++) {
         if(this.queueList[i].list.length <= 0){
           continue
         }
         let currentPkt = this.queueList[i].list.shift()
-        this.outputQueueList[0].list.push(currentPkt) 
+        this.outputQueueList[0].list.push(currentPkt)
+        this.packetsTrans[currentPkt.id]++; 
 
         for (let n = i; n < this.queueAmount; n++) {
           // inversion occurs
@@ -261,18 +272,27 @@ export default {
             for (let k = 0; k < this.queueList[n].list.length; k++) {
               if (currentPkt.size > this.queueList[n].list[k].size) {
                 this.queueList[n].list[k].inversion.push(currentPkt.size - this.queueList[n].list[k].size);
-                this.queueList[n].list[k].preemption.push(currentPkt.size);
+                this.queueList[n].list[k].preemption.push(currentPkt.size);                
               }
             }
           }
-        }
-
+        }    
+        
         this.outputAmount++
+        if(this.outputAmount >= this.packages.length){
+          clearInterval(this.timer)
+        }
+        if(this.outputAmount % (this.flowAmount * 3)== 0){
+          let tmpList2 = this.packetsTrans.concat()          
+          this.packetsTrans = []
+          for(let i = 0 ; i < this.flowAmount; ++i){
+            this.packetsTrans.push(0)
+          }
+          this.$emit('showSpeedCharts', tmpList2)
+        }
         break
       }
-      if(this.outputAmount >= this.packages.length){
-        clearInterval(this.timer)
-      }
+      
     },
 
     transmit_orig() {

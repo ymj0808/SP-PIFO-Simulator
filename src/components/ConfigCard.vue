@@ -18,6 +18,15 @@
       />
     </a-form-item>
 
+    <a-form-item label="Flow Amount">
+      <a-input-number
+        style="min-width: 200px"
+        v-model:value="formState.flowAmount"
+        :min="0"
+        :max="1024"
+      />
+    </a-form-item>
+
     <a-form-item label="Time Interval(seconds)">
       <a-input-number
         style="min-width: 200px"
@@ -70,7 +79,7 @@
         <a-tag
           :closable="true"
           @close="handleRemove(pack.id)"
-          :color="$packageColor(pack.size)"
+          :color="$packageColor(pack.id * 60)"
         >
           <div class="small">#{{ index + 1 }}</div>
           <div class="big">{{ pack.size }}</div>
@@ -140,6 +149,7 @@ export default {
         timeInterval: 0,
         packages: [],
         bufferSize: 32,
+        flowAmount: 4,  
       },
       file: null,
       content: null,
@@ -280,7 +290,9 @@ export default {
       reader.readAsText(this.file);
       reader.onload = (res) => {
         this.content = res.target.result;
-
+        for(let i = 0; i < this.flowAmount; ++i){
+          this.packetsTrans.push(0);
+        }
         const arr = this.content.split("\n");
         for(let i = 0; i < arr.length; ++i){
           const line_li = arr[i].split(" ");
@@ -290,9 +302,7 @@ export default {
             inversion: [],
             preemption: [],
           });
-        }
-         
-        console.log(array);
+        }         
         this.formState.packages = array;
       };
 
