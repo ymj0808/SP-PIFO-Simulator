@@ -146,7 +146,7 @@ export default {
     },
     queueAmount: {
       type: Number,
-      default: 8,
+      default: 4,
     },
     timeInterval: {
       type: Number,
@@ -154,9 +154,13 @@ export default {
     },
     bufferSize:{
       type: Number,
-      default:32,
+      default: 1024,
     },
     flowAmount:{
+      type: Number,
+      default:4,
+    },
+    observeWin:{
       type: Number,
       default:4,
     },
@@ -264,6 +268,7 @@ export default {
         let currentPkt = this.queueList[i].list.shift()
         this.outputQueueList[0].list.push(currentPkt)
         this.packetsTrans[currentPkt.id]++; 
+        //console.log(currentPkt.id, this.outputAmount)
 
         for (let n = i; n < this.queueAmount; n++) {
           // inversion occurs
@@ -282,12 +287,9 @@ export default {
         if(this.outputAmount >= this.packages.length){
           clearInterval(this.timer)
         }
-        if(this.outputAmount % (this.flowAmount * 3)== 0){
+        if((this.outputAmount >= this.observeWin && this.outputAmount % this.observeWin == 0) || this.outputAmount == this.packages.length){
           let tmpList2 = this.packetsTrans.concat()          
-          this.packetsTrans = []
-          for(let i = 0 ; i < this.flowAmount; ++i){
-            this.packetsTrans.push(0)
-          }
+          this.packetsTrans = []          
           this.$emit('showSpeedCharts', tmpList2)
         }
         break

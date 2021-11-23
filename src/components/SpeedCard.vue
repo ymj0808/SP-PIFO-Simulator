@@ -30,23 +30,36 @@ export default {
   data() {
     return {
       option: null, 
-      x : [],
-      y1: [], 
-      y2: [],
-      y3: [], 
-      y4: [],   
+      x : [],        
+      y : [],
+      results: [],
     }
   },
   methods: {
-    changeData(packetTrans) {
-        console.log(packetTrans)        
+    changeData(packetTrans) {     
+        //console.log(packetTrans)
         this.x.push(this.x.length)
-        this.y1.push(packetTrans[0])
-        this.y2.push(packetTrans[1])
-        this.y3.push(packetTrans[2])
-        this.y4.push(packetTrans[3])
         
-        console.log("1111", this.x, this.y1)
+        if(this.y.length == 0){
+            for(let i = 0; i < packetTrans.length; i++){
+                let tmp = []
+                tmp.push(packetTrans[i])
+                this.y.push(tmp)
+            }
+        }
+        else{
+            for(let i = 0; i < packetTrans.length; i++){
+                this.y[i].push(packetTrans[i])
+            }
+        }
+
+        for(let i =0; i < packetTrans.length; i++){
+            this.results.push({
+                data: this.y[i],
+                type: 'line',
+                smooth: true,
+            })
+        }
 
         this.option = {
             legend:{
@@ -55,36 +68,15 @@ export default {
 
             xAxis: {
             type: 'category',
-            name: 'magnitude',
+            name: 'time',
             data: this.x,
             },
                 
             yAxis: {
-            type: 'value'
+            type: 'value',
+            name: 'bandwidth',
             },
-            series: [
-                {
-                    data: this.y1,
-                    type: 'line',
-                    smooth: true,
-                },
-                {
-                    data: this.y2,
-                    type: 'line',
-                    smooth: true,
-                },
-                {
-                    data: this.y3,
-                    type: 'line',
-                    smooth: true,
-                },
-                {
-                    data: this.y4,
-                    type: 'line',
-                    smooth: true,
-                },
-                
-            ]
+            series: this.results,
         }
     }
   }

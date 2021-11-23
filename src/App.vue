@@ -44,7 +44,8 @@
           description="You should do basic configuration first!"
         />
         <result-card v-else :packages="config.packages" :queueAmount="config.queueAmount"
-                     :bufferSize="config.bufferSize" :flowAmount="config.flowAmount" :timeInterval="config.timeInterval" ref="resultCard"
+                     :bufferSize="config.bufferSize" :flowAmount="config.flowAmount" 
+                     :observeWin="config.observeWin" :timeInterval="config.timeInterval" ref="resultCard"
                      @showInversionCharts="showInversionCharts" @showSpeedCharts="showSpeedCharts"></result-card>
       </a-card>
       <a-card :hoverable="true" v-show="inversionPackages.length > 0">

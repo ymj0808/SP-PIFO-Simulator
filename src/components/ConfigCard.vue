@@ -24,6 +24,17 @@
         v-model:value="formState.flowAmount"
         :min="0"
         :max="1024"
+        :step="1"
+      />
+    </a-form-item>
+
+    <a-form-item label="Observe Window">
+      <a-input-number
+        style="min-width: 200px"
+        v-model:value="formState.observeWin"
+        :min="0"
+        :max="65535"
+        :step="1"
       />
     </a-form-item>
 
@@ -145,11 +156,12 @@ export default {
       newPack: 1,
       sizeRange: { min: 1, max: 65535 },
       formState: {
-        queueAmount: 2,
+        queueAmount: 4,
         timeInterval: 0,
         packages: [],
-        bufferSize: 32,
-        flowAmount: 4,  
+        bufferSize: 1024,
+        flowAmount: 4,
+        observeWin: 4,
       },
       file: null,
       content: null,
@@ -300,8 +312,8 @@ export default {
             size: parseInt(line_li[1]),
             id: parseInt(line_li[0]),
             inversion: [],
-            preemption: [],
-          });
+            preemption: [],            
+          });          
         }         
         this.formState.packages = array;
       };
