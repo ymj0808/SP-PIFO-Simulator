@@ -61,7 +61,7 @@ export default {
                 smooth: true,
                 itemStyle: {
                         normal: {
-                            color: colorList[i]
+                            color: colorList[i % colorList.length]
                         }
                     },
             })
