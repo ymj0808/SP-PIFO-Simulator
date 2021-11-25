@@ -52,12 +52,18 @@ export default {
                 this.y[i].push(packetTrans[i])
             }
         }
+        var colorList = ['#5470c6', '#91cc75','#fac858','#ee6666','#73c0de','#3ba272','#fc8452','#9a60b4','#ea7ccc',]
 
         for(let i =0; i < packetTrans.length; i++){
             this.results.push({
                 data: this.y[i],
                 type: 'line',
                 smooth: true,
+                itemStyle: {
+                        normal: {
+                            color: colorList[i]
+                        }
+                    },
             })
         }
 
