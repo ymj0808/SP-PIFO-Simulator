@@ -8,7 +8,7 @@
         :max="32"
       />
     </a-form-item>
-
+    <!--
     <a-form-item label="Buffer Size(packets)">
       <a-input-number
         style="min-width: 200px"
@@ -17,6 +17,17 @@
         :max="1024"
       />
     </a-form-item>
+    --> 
+    <a-form-item label="Incast( /100 packets)">
+      <a-input-number
+        style="min-width: 200px"
+        v-model:value="formState.incast"
+        :min="0"
+        :max="100"
+      />
+    </a-form-item>
+
+
 
     <a-form-item label="Flow Amount">
       <a-input-number
@@ -27,7 +38,7 @@
         :step="1"
       />
     </a-form-item>
-
+    <!--
     <a-form-item label="Observe Window">
       <a-input-number
         style="min-width: 200px"
@@ -37,6 +48,8 @@
         :step="1"
       />
     </a-form-item>
+
+    -->
 
     <a-form-item label="Time Interval(seconds)">
       <a-input-number
@@ -159,9 +172,10 @@ export default {
         queueAmount: 4,
         timeInterval: 0,
         packages: [],
-        bufferSize: 1024,
+        //bufferSize: 1024,
+        incast:100,
         flowAmount: 4,
-        observeWin: 4,
+        //observeWin: 4,
       },
       file: null,
       content: null,

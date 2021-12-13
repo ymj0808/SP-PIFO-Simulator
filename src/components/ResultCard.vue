@@ -162,8 +162,12 @@ export default {
     },
     observeWin:{
       type: Number,
-      default:4,
+      default:10,
     },
+    incast:{
+      type: Number,
+      default: 100,
+    }
   },
   computed: {
     remainedPackages() {
@@ -189,6 +193,47 @@ export default {
         list: []
       }]
     },
+    
+    apply() {
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
+      this.queueList = []
+      this.finishAmount = 0
+      this.outputAmount = 0
+      for (let i = 0; i < this.queueAmount; i++) {
+        this.queueList.push({bound: 0, list: [], minRank: 10000});
+      }
+      //for(let i = 0; i < this.bufferSize; i++){
+      // this.popPackage()
+      //}
+      this.timer = setInterval(this.transmit, this.timeInterval * 1000)
+      
+    },
+
+    transmit(){
+      if(this.finishAmount < this.packages.length){
+        this.popPackage()
+      }      
+      //if(this.finishAmount == this.packages.length || (this.finishAmount > this.bufferSize && this.outputAmount < this.packages.length)){
+      //  this.output()
+      //}
+
+      if(this.finishAmount == this.packages.length || this.finishAmount % 100 < this.incast){
+        this.output()
+      }
+
+      let tmpList = this.outputQueueList[0].list.concat()
+      this.$emit('showInversionCharts', tmpList)
+    },
+
+    finishNow() {
+      clearInterval(this.timer)
+      while (this.outputAmount < this.packages.length) {
+        this.transmit()
+      }
+    },
+
     popPackage() {
       if (this.finishAmount >= this.packages.length)
         return;
@@ -218,40 +263,6 @@ export default {
         this.queueList[i].bound -= this.queueList[0].bound - item.size;
       }
             
-    },
-    apply() {
-      if (this.timer) {
-        clearInterval(this.timer);
-      }
-      this.queueList = []
-      this.finishAmount = 0
-      this.outputAmount = 0
-      for (let i = 0; i < this.queueAmount; i++) {
-        this.queueList.push({bound: 0, list: [], minRank: 10000});
-      }
-      for(let i = 0; i < this.bufferSize; i++){
-       this.popPackage()
-      }
-      this.timer = setInterval(this.transmit, this.timeInterval * 1000)
-      
-    },
-
-    transmit(){
-      if(this.finishAmount < this.packages.length){
-        this.popPackage()
-      }      
-      if(this.finishAmount == this.packages.length || (this.finishAmount > this.bufferSize && this.outputAmount < this.packages.length)){
-        this.output()
-      }
-      let tmpList = this.outputQueueList[0].list.concat()
-      this.$emit('showInversionCharts', tmpList)
-    },
-
-    finishNow() {
-      clearInterval(this.timer)
-      while (this.outputAmount < this.packages.length) {
-        this.transmit()
-      }
     },
 
     output() {
@@ -289,7 +300,7 @@ export default {
         }
         if((this.outputAmount >= this.observeWin && this.outputAmount % this.observeWin == 0) || this.outputAmount == this.packages.length){
           let tmpList2 = this.packetsTrans.concat()          
-          this.packetsTrans = []          
+          //this.packetsTrans = []          
           this.$emit('showSpeedCharts', tmpList2)
         }
         break
